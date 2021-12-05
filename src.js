@@ -18,15 +18,30 @@ function Player(name, symbol) {
 
 // DisplayController Module. Controls what's displayed on the board.
 const DisplayController = (() => {
+    let form = document.getElementById("player-form");
+    let resetbutton = document.getElementById("reset-button");
     let announcement = document.querySelector('.announcements');
     let squares = document.querySelectorAll('.square');
     let pressedSquare = "";
-    squares.forEach((square) => {
-        square.addEventListener('click', () => {
-            Game.playerClicked(square);
-        });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let p1name = document.getElementById("p1name").value;
+        let p2name = document.getElementById("p2name").value;
+        let p1symbol = document.getElementById("p1symbol").value;
+        let p2symbol = document.getElementById("p2symbol").value;
+
+        if (p1symbol.toLowerCase() == p2symbol.toLowerCase()) {
+            announce("The two players' symbols can't be the same.");
+        }
+        else {
+            Game.start(squares, p1name, p2name, p1symbol, p2symbol);
+        }
     });
 
+    resetbutton.addEventListener('click', () => {
+
+    });
     // const getSquare = () => pressedSquare;
     // const setSquare = (square, symbol) => {
     //     square.innerHTML = symbol;
@@ -46,7 +61,12 @@ const DisplayController = (() => {
     const announce = (msg) => {
         announcement.innerHTML = msg;
     }
-    return {updateDisplay, announce};
+
+    const resetForm = () => {
+        document.getElementById("player-form").reset();
+    }
+
+    return {updateDisplay, resetForm, announce};
 
 })();
 
@@ -55,34 +75,44 @@ const DisplayController = (() => {
 const Game = (() => {
 
     // Game start initializations
-    let player1 = Player("Jim", "X");
-    let player2 = Player("Steven", "O");
-    let currentPlayerTurn = 1;
-    let currentPlayer = player1;
-    let gameOver = false;
+
+    const start = (squares, p1name, p2name, p1symbol, p2symbol) => {
+        let player1 = Player(p1name, p1symbol);
+        let player2 = Player(p2name, p2symbol);
+        let currentPlayer = player1;
+        let bgameOver = false;
+
+        squares.forEach((square) => {
+            square.addEventListener('click', () => {
+                [bgameOver, currentPlayer] = playerClicked(square, player1, player2, currentPlayer, bgameOver);
+            });
+        });
+    };
 
     // This function activates when a player clicks a square.
     // Sets clicked square
-    const playerClicked = (square) => {
-        if (!gameOver) {
+    const playerClicked = (square, player1, player2, currentPlayer, bgameOver) => {
+        if (!bgameOver) {
             let setSquareStatus = setSquare(square, currentPlayer.getSymbol());
             let gameStatus = checkStatus();
             DisplayController.updateDisplay();
             if (setSquareStatus == "success" && gameStatus == "none") {
-                nextPlayer();
+                currentPlayer = nextPlayer(currentPlayer, player1, player2);
             }
             else if (gameStatus == "draw") {
                 DisplayController.announce("Draw!");
-                gameOver = true;
+                bgameOver = true;
             }
             else if (gameStatus == player1.getSymbol()) {
                 DisplayController.announce("Congratulations! " + player1.getName() + " has won!");
-                gameOver = true;
+                bgameOver = true;
             }
             else if (gameStatus == player2.getSymbol()) {
                 DisplayController.announce("Congratulations! " + player2.getName() + " has won!");
-                gameOver = true;
+                bgameOver = true;
             }
+
+            return [bgameOver, currentPlayer];
         }
     } 
 
@@ -99,13 +129,14 @@ const Game = (() => {
         }
     }
 
-    const nextPlayer = () => {
+    const nextPlayer = (currentPlayer, player1, player2) => {
         if (currentPlayer == player1) {
             currentPlayer = player2;
         }
         else {
             currentPlayer = player1;
         }
+        return currentPlayer;
     }
 
     // Checks the game Status. 
@@ -124,15 +155,13 @@ const Game = (() => {
 
         return (gameBoard[0][0] == gameBoard[0][1] && gameBoard[0][1] == gameBoard[0][2] && gameBoard[0][0] != "") ? gameBoard[0][0]
            :(gameBoard[1][0] == gameBoard[1][1] && gameBoard[1][1] == gameBoard[1][2] && gameBoard[1][0] != "") ? gameBoard[1][0]
-           :(gameBoard[2][0] == gameBoard[2][1] && gameBoard[2][1] == gameBoard[2][2] && gameBoard[1][0] != "") ? gameBoard[2][0]
+           :(gameBoard[2][0] == gameBoard[2][1] && gameBoard[2][1] == gameBoard[2][2] && gameBoard[2][0] != "") ? gameBoard[2][0]
            :(gameBoard[0][0] == gameBoard[1][0] && gameBoard[1][0] == gameBoard[2][0] && gameBoard[0][0] != "") ? gameBoard[0][0]
            :(gameBoard[0][1] == gameBoard[1][1] && gameBoard[1][1] == gameBoard[2][1] && gameBoard[0][1] != "") ? gameBoard[0][1]
            :(gameBoard[0][2] == gameBoard[1][2] && gameBoard[1][2] == gameBoard[2][2] && gameBoard[0][2] != "") ? gameBoard[0][2]
            :(gameBoard[0][0] == gameBoard[1][1] && gameBoard[1][1] == gameBoard[2][2] && gameBoard[0][0] != "") ? gameBoard[0][0]
            :(gameBoard[2][0] == gameBoard[1][1] && gameBoard[1][1] == gameBoard[0][2] && gameBoard[2][0] != "") ? gameBoard[2][0]
-           :filled ? "draw"
-           :"none"
-        ;
+           :filled ? "draw": "none";
     }
 
     // First: reset gameBoard state to all empty.
@@ -146,7 +175,5 @@ const Game = (() => {
         DisplayController.updateDisplay();
     }
 
-
-
-    return {playerClicked};
+    return {playerClicked, resetGame, start};
 })();

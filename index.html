@@ -14,24 +14,23 @@
     <div class="game-container">
         <div class="center-container">
             <div class="options">
-                <div class="options-header">
-                    Options
-                </div>
-                <div class="options-player1-name">
-                    Player1 Name
-                </div>
-                <div class="options-player1-symbol">
-                    Player1 Symbol
-                </div>
-                <div class="options-player2-name">
-                    Player2 Name
-                </div>
-                <div class="options-player2-symbol">
-                    Player2 Symbol
-                </div>
-                <div class="options-start">
-                    Start
-                </div>
+                <div class="options-header">Options</div>
+                <form id="player-form">
+                    <label for="p1name">Player1's Name</label>
+                    <input type="text" id="p1name" name="p1name" class="options-player1-name" minlength="1">
+                    
+                    <div>Player1's Symbol</div>
+                    <input type="text" id="p1symbol" name="p1symbol" minlength="1" maxlength="1">
+                    
+                    <label for="p2name">Player2's Name</label>
+                    <input type="text" id="p2name" name="p2name" class="options-player2-name" minlength="1"><br>
+                    
+                    <div>Player2's Symbol</div>
+                    <input type="text" id="p2symbol" name="p2symbol" minlength="1" maxlength="1"><br>
+
+                    <button type="submit" id="options-start">Start</button><br>
+                    <button id="reset-button">Reset Board</button>
+                </form>
             </div>
             <div class="game">
                 <div class="square" data-id="00"></div>
