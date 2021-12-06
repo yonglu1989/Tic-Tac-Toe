@@ -34,6 +34,11 @@
     font-weight: bolder;
 }
 
+#player-form {
+   display: flex;
+   flex-direction: column;
+   gap: 5px; 
+}
 
 .game {
     display: grid;
@@ -71,3 +76,7 @@
 /* div {
     border: 0;
 } */
+
+button {
+    height: 30px;
+}

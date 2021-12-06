@@ -19,10 +19,9 @@ function Player(name, symbol) {
 // DisplayController Module. Controls what's displayed on the board.
 const DisplayController = (() => {
     let form = document.getElementById("player-form");
-    let resetbutton = document.getElementById("reset-button");
     let announcement = document.querySelector('.announcements');
     let squares = document.querySelectorAll('.square');
-    let pressedSquare = "";
+    let resetButton = document.getElementById("reset-button");
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -39,8 +38,8 @@ const DisplayController = (() => {
         }
     });
 
-    resetbutton.addEventListener('click', () => {
-
+    resetButton.addEventListener('click', () => {
+        Game.resetBoard();
     });
     // const getSquare = () => pressedSquare;
     // const setSquare = (square, symbol) => {
@@ -77,6 +76,7 @@ const Game = (() => {
     // Game start initializations
 
     const start = (squares, p1name, p2name, p1symbol, p2symbol) => {
+        resetBoard();
         let player1 = Player(p1name, p1symbol);
         let player2 = Player(p2name, p2symbol);
         let currentPlayer = player1;
@@ -166,14 +166,15 @@ const Game = (() => {
 
     // First: reset gameBoard state to all empty.
     // Second: Update DOM display.
-    const resetGame = () => {
+    const resetBoard = () => {
         for (let i = 0; i < gameBoard.length; i++) {
             for (let j = 0; j < gameBoard[i].length; j++) {
                 gameBoard[i][j] = "";
             }
         }
         DisplayController.updateDisplay();
+        DisplayController.announce("Board has been reset!");
     }
 
-    return {playerClicked, resetGame, start};
+    return {playerClicked, resetBoard, start};
 })();
